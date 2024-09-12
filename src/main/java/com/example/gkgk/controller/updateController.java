@@ -115,7 +115,6 @@ public class updateController {
         itemService.insert(map1);
 
         // 가장 최근 insert된 아이템 테이블의 PK 데이터
-
         int recentiid = itemService.recentiid();
 
         // 기존 JSON 데이터 읽기
