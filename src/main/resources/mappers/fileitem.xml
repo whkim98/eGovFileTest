@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.gkgk.mapper.itemInter">
+    <insert id="insertItem" parameterType="map">
+        insert into TABLE_UPDATE_ITEM (iid, TABLE_UPDATE_UID, FIELD_NAME, FROM_VALUE)
+        values (table_update_item_seq.NEXTVAL, #{id}, #{field_name}, #{from_value})
+<!--        <selectKey keyProperty="iid" resultType="int" order="AFTER">-->
+<!--            SELECT LAST_INSERT_ID() from talble_update_item-->
+<!--        </selectKey>-->
+    </insert>
+
+
+
+    <select id="recentiid" resultType="int">
+        select max(iid) from TABLE_UPDATE_ITEM
+    </select>
+
+    <delete id="deleteItem" parameterType="int">
+        delete from TABLE_UPDATE_ITEM where TABLE_UPDATE_UID=#{id}
+    </delete>
+
+    <select id="selectDetail" resultType="com.example.gkgk.dto.itemDto" parameterType="int">
+        select * from TABLE_UPDATE_ITEM where TABLE_UPDATE_UID=#{id}
+    </select>
+
+
+</mapper>

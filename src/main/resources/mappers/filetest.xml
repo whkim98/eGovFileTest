@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.gkgk.mapper.updateInter">
+    <insert id="insert" parameterType="String">
+        INSERT INTO table_update (TABLE_NAME, id) VALUES (#{table_name}, table_update_seq.NEXTVAL)
+    </insert>
+
+    <select id="fileList" resultType="com.example.gkgk.dto.updateDto">
+        select * from TABLE_UPDATE
+    </select>
+
+    <update id="updateFile" parameterType="map">
+        update TABLE_UPDATE set TABLE_NAME = #{table_name} where id = #{id}
+    </update>
+
+    <update id="updateContent" parameterType="map">
+        update TABLE_UPDATE set UPDATE_CONTENT = #{update_content}, TABLE_UID = #{recentiid} where id = #{id}
+    </update>
+
+    <select id="selectUid">
+        select id from TABLE_UPDATE where UPDATE_CONTENT is null
+    </select>
+
+    <delete id="deleteFile" parameterType="int">
+        delete from TABLE_UPDATE where id=#{id}
+    </delete>
+</mapper>
