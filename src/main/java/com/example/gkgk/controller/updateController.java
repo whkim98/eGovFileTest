@@ -1,8 +1,10 @@
 package com.example.gkgk.controller;
 
+import com.example.gkgk.ftp.ftpClientUtil;
 import com.example.gkgk.service.itemService;
 import com.example.gkgk.service.updateService;
 //import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.net.ftp.FTPClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +69,32 @@ public class updateController {
                 }
             }
         }
+
+        for (MultipartFile myfile : myfiles) {
+            if (!myfile.isEmpty()) {
+                String testFile = myfile.getOriginalFilename();
+                try {
+                    // FTP 파일 업로드를 위한 전체 경로 생성
+                    String localFilePath = uploadPath + File.separator + testFile;
+                    String remoteFilePath = testFile;
+
+                    ftpClientUtil ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
+
+                    // 업로드 시 전체 로컬 파일 경로를 전달
+                    boolean uploadResult = ftp.uploadFile(localFilePath, "D:/whftp/" + remoteFilePath);
+
+                    if (uploadResult) {
+                        System.out.println("FTP 파일 업로드 성공: " + testFile);
+                    } else {
+                        System.out.println("FTP 파일 업로드 실패: " + testFile);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
 
         return "redirect:/";
     }
