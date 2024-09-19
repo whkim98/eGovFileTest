@@ -43,6 +43,8 @@ public class updateController {
         String uploadPath = request.getSession().getServletContext().getRealPath("/resources/file");
         System.out.println("업로드 경로: " + uploadPath);
 
+
+        //로컬 경로 파일 저장
         // 파일 저장 경로 생성
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
@@ -76,26 +78,24 @@ public class updateController {
                 try {
                     // FTP 파일 업로드를 위한 전체 경로 생성
                     String localFilePath = uploadPath + File.separator + testFile;
-                    String remoteFilePath = testFile;
+                    System.out.println(localFilePath);
 
                     ftpClientUtil ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
 
                     // 업로드 시 전체 로컬 파일 경로를 전달
-                    boolean uploadResult = ftp.uploadFile(localFilePath, "D:/whftp/" + remoteFilePath);
+                    boolean uploadResult = ftp.uploadFile(localFilePath, "D:/whftp/" + testFile);
 
                     if (uploadResult) {
                         System.out.println("FTP 파일 업로드 성공: " + testFile);
                     } else {
                         System.out.println("FTP 파일 업로드 실패: " + testFile);
                     }
+                    ftp.disconnect();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-
-
-
         return "redirect:/";
     }
 

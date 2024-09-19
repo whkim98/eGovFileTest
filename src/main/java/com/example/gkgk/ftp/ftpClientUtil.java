@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class ftpClientUtil {
 
@@ -25,8 +26,11 @@ public class ftpClientUtil {
     //파일을 ftp서버에 업로드
     public boolean uploadFile(String localFilePath, String remoteFilePath) throws IOException {
         try (FileInputStream input = new FileInputStream(localFilePath)) {
+            System.out.println("로컬" + localFilePath);
+            System.out.println("리모트" + remoteFilePath);
+
             // 공백을 URL 인코딩으로 변환
-            String encodedRemoteFilePath = URLEncoder.encode(remoteFilePath, "UTF-8").replace("+", "%20");
+            String encodedRemoteFilePath = URLEncoder.encode(remoteFilePath, StandardCharsets.UTF_8).replace(" ", "%20");
             boolean success = ftpClient.storeFile(encodedRemoteFilePath, input);
             if (!success) {
                 System.err.println("FTP서버 업로드 실패: " + ftpClient.getReplyString());
