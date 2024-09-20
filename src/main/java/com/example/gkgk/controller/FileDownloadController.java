@@ -2,6 +2,7 @@ package com.example.gkgk.controller;
 
 import com.example.gkgk.ftp.ftpClientUtil;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -48,16 +51,15 @@ public class FileDownloadController {
 
     // FTP 서버 파일 다운로드
     @GetMapping("/file/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam("filename") String filename) {
+    public ResponseEntity<Resource> downloadFile(@RequestParam("filename") String filename
+    , HttpServletRequest request) {
         ftpClientUtil ftp = null;
         try {
             // FTP 클라이언트 객체 초기화
             ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
 
-            // URL 인코딩된 파일 이름을 디코딩
-            String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
-            String remoteFilePath = "D:/whftp/" + decodedFilename;
-            String localFilePath = "C:/Users/USER/Desktop/김우형/gkgk/src/main/webapp/resources/ftpFile/" + decodedFilename;
+            String remoteFilePath = URLEncoder.encode(("D:/whftp/" + filename), StandardCharsets.UTF_8);
+            String localFilePath = "C:/Users/USER/Desktop/김우형/gkgk/src/main/webapp/resources/ftpFile/" + filename;
 
             // 로컬 파일 저장 경로 생성
             File localFile = new File(localFilePath);
@@ -71,8 +73,10 @@ public class FileDownloadController {
 
             // HTTP 헤더 설정
             HttpHeaders headers = new HttpHeaders();
-            String encodedFilename = URLEncoder.encode(decodedFilename, StandardCharsets.UTF_8).replace("+", "%20");
+            String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFilename);
+
+
 
             // 파일을 ResponseEntity로 반환
             return ResponseEntity.ok()
@@ -91,7 +95,15 @@ public class FileDownloadController {
                 e.printStackTrace();
             }
         }
+
+
+
     }
 
 
+
+
 }
+
+
+

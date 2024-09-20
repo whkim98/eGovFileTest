@@ -20,8 +20,10 @@
             // <td> 클릭 시 파일 다운로드
             $('.download-file').click(function() {
                 var filename = $(this).data('filename');
-                window.location.href = '/file/download?filename=' + filename; // 파일 다운로드 요청
+                window.location.href = '/file/download?filename=' + encodeURIComponent(filename); // 파라미터 이름을 'fileName'으로 수정
             });
+
+
 
             // 이력조회 버튼 클릭 시 AJAX 요청
             $('.history-btn').click(function() {
