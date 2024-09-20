@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -36,68 +35,43 @@ public class updateController {
     //원래는 해당 정보(ex. 게시판)에 해당하는 첨부파일을 해서 pk, fk 관계를 통해 해당 정보에 해당하는 파일만 보이도록 하는
     //로직이 필요하지만 지금은 제외함. 어떤 식으로 진행될 지 모르기 때문
     @PostMapping("/file/update")
-    public String update(@RequestParam("myfiles") MultipartFile[] myfiles,
-                         HttpServletRequest request) {
+    public String update(@RequestParam("myfiles") MultipartFile[] myfiles) {
+        ftpClientUtil ftp = null;
+        try {
+            ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
 
-        // 파일 업로드 경로 설정
-        String uploadPath = request.getSession().getServletContext().getRealPath("/resources/file");
-        System.out.println("업로드 경로: " + uploadPath);
-
-
-        //로컬 경로 파일 저장
-        // 파일 저장 경로 생성
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdir();  // 디렉토리가 없으면 생성
-        }
-
-        System.out.println(Arrays.toString(myfiles));
-
-        for (MultipartFile myfile : myfiles) {
-            if (!myfile.isEmpty()) {
-                // 파일 이름 가져오기
-                String testFile = myfile.getOriginalFilename();
-                try {
-                    // 파일을 실제 경로에 저장
-                    File saveFile = new File(uploadPath, testFile);
-                    myfile.transferTo(saveFile);
-
-                    System.out.println("파일 저장 완료: " + saveFile.getAbsolutePath());
-
-                    updateService.insert(testFile);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+            for (MultipartFile myfile : myfiles) {
+                if (!myfile.isEmpty()) {
+                    // 파일 이름 가져오기
+                    String testFile = myfile.getOriginalFilename();
+                    try (InputStream inputStream = myfile.getInputStream()) {
+                        // FTP 서버에 파일 업로드
+                        boolean uploadResult = ftp.uploadFile(inputStream, "D:/whftp/" + testFile);
+                        if (uploadResult) {
+                            System.out.println("FTP 파일 업로드 성공: " + testFile);
+                            updateService.insert(testFile);
+                        } else {
+                            System.out.println("FTP 파일 업로드 실패: " + testFile);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
-
-        for (MultipartFile myfile : myfiles) {
-            if (!myfile.isEmpty()) {
-                String testFile = myfile.getOriginalFilename();
-                try {
-                    // FTP 파일 업로드를 위한 전체 경로 생성
-                    String localFilePath = uploadPath + File.separator + testFile;
-                    System.out.println(localFilePath);
-
-                    ftpClientUtil ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
-
-                    // 업로드 시 전체 로컬 파일 경로를 전달
-                    boolean uploadResult = ftp.uploadFile(localFilePath, "D:/whftp/" + testFile);
-
-                    if (uploadResult) {
-                        System.out.println("FTP 파일 업로드 성공: " + testFile);
-                    } else {
-                        System.out.println("FTP 파일 업로드 실패: " + testFile);
-                    }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ftp != null) {
                     ftp.disconnect();
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return "redirect:/";
     }
+
 
 
 
@@ -106,28 +80,50 @@ public class updateController {
                           @RequestParam("previous_filename") String previousFilename,
                           HttpServletRequest request, @RequestParam("id") int id) {
 
-        String uploadPath = request.getSession().getServletContext().getRealPath("/resources/file");
+        String uploadPath = request.getSession().getServletContext().getRealPath("/resources/ftpFile");
         String newFileName = myfile.getOriginalFilename();
 
         // 이전 파일 삭제
-        File oldFile = new File(uploadPath + File.separator + previousFilename);
-        if (oldFile.exists()) {
-            if (oldFile.delete()) {
-                System.out.println("이전 파일 삭제 성공: " + previousFilename);
-            } else {
-                System.out.println("이전 파일 삭제 실패: " + previousFilename);
+        try{
+            ftpClientUtil ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
+            File oldFile = new File(uploadPath + File.separator + previousFilename);
+            if (oldFile.exists()) {
+                if (oldFile.delete()) {
+                    System.out.println("이전 파일 삭제 성공: " + previousFilename);
+                } else {
+                    System.out.println("이전 파일 삭제 실패: " + previousFilename);
+                }
             }
+            String remoteFilePath = URLEncoder.encode(("D:/whftp/" + previousFilename), StandardCharsets.UTF_8);
+            ftp.deleteFile(remoteFilePath);
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
 
         // 새 파일 저장
         try {
             File newFile = new File(uploadPath + File.separator + newFileName);
             myfile.transferTo(newFile);
+            try (InputStream inputStream = new FileInputStream(newFile)) {
+                // FTP 서버에 파일 업로드
+                ftpClientUtil ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
+                boolean uploadResult = ftp.uploadFile(inputStream, "D:/whftp/" + newFileName);
+                if (uploadResult) {
+                    System.out.println("FTP 파일 업로드 성공: " + newFileName);
+                } else {
+                    System.out.println("FTP 파일 업로드 실패: " + newFileName);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             System.out.println("새 파일 저장 성공: " + newFileName);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("파일 저장 실패");
         }
+
+
 
         // 업데이트 테이블 업데이트
         Map<String, Object> map = new HashMap<>();
