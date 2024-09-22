@@ -83,7 +83,7 @@ public class updateController {
         String uploadPath = request.getSession().getServletContext().getRealPath("/resources/ftpFile");
         String newFileName = myfile.getOriginalFilename();
 
-        // 이전 파일 삭제
+        // 이전 파일 삭제(이전 파일의 삭제 시기는 수정 가능함) => 수정한다고 바로 삭제되는게 아닐거임 아마도
         try{
             ftpClientUtil ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
             File oldFile = new File(uploadPath + File.separator + previousFilename);
@@ -102,27 +102,54 @@ public class updateController {
 
 
         // 새 파일 저장
-        try {
-            File newFile = new File(uploadPath + File.separator + newFileName);
-            myfile.transferTo(newFile);
-            try (InputStream inputStream = new FileInputStream(newFile)) {
-                // FTP 서버에 파일 업로드
-                ftpClientUtil ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
-                boolean uploadResult = ftp.uploadFile(inputStream, "D:/whftp/" + newFileName);
-                if (uploadResult) {
-                    System.out.println("FTP 파일 업로드 성공: " + newFileName);
-                } else {
-                    System.out.println("FTP 파일 업로드 실패: " + newFileName);
+//        try {
+//            File newFile = new File(uploadPath + File.separator + newFileName);
+//            myfile.transferTo(newFile);
+//            try (InputStream inputStream = new FileInputStream(newFile)) {
+//                // FTP 서버에 파일 업로드
+//                ftpClientUtil ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
+//                boolean uploadResult = ftp.uploadFile(inputStream, "D:/whftp/" + newFileName);
+//                if (uploadResult) {
+//                    System.out.println("FTP 파일 업로드 성공: " + newFileName);
+//                } else {
+//                    System.out.println("FTP 파일 업로드 실패: " + newFileName);
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            System.out.println("새 파일 저장 성공: " + newFileName);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            System.out.println("파일 저장 실패");
+//        }
+
+        //새 파일 저장
+        ftpClientUtil ftp = null;
+        try{
+            ftp = new ftpClientUtil("localhost", 21, "whftp", "1234");
+            if(!myfile.isEmpty()){
+                try(InputStream inputStream = myfile.getInputStream()){
+                    boolean uploadResult = ftp.uploadFile(inputStream, "D:/whftp/" + newFileName);
+                    if(uploadResult){
+                        System.out.println("FTP 새 파일 저장 성공: " + newFileName);
+                    }else{
+                        System.out.println("FTP 새 파일 저장 실패: " + newFileName);
+                    }
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try{
+                if(ftp != null){
+                    ftp.disconnect();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("새 파일 저장 성공: " + newFileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("파일 저장 실패");
         }
-
 
 
         // 업데이트 테이블 업데이트
