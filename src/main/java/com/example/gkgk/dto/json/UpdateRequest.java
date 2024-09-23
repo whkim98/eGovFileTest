@@ -17,6 +17,4 @@ public class UpdateRequest {
     private String previousFilename;
     private List<MultipartFile> files;
     private List<String> fileNames;
-
-    // Getters and Setters
 }

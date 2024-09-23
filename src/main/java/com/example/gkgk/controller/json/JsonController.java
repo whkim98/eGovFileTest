@@ -1,6 +1,6 @@
 package com.example.gkgk.controller.json;
 
-import com.example.gkgk.dto.json.MyJsonDTO;
+import com.example.gkgk.dto.json.JsonDTO;
 import com.example.gkgk.dto.json.UpdateRequest;
 import com.example.gkgk.dto.updateDto;
 import com.example.gkgk.ftp.ftpClientUtil;
@@ -48,7 +48,7 @@ public class JsonController {
     @PostMapping("/json/file")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> update(
-            @RequestPart("jsonData") MyJsonDTO jsonData,  // JSON 데이터를 DTO로 받음
+            @RequestPart("jsonData") JsonDTO jsonData,  // JSON 데이터를 DTO로 받음
             @RequestParam("myfiles") MultipartFile[] myfiles) {
 
         System.out.println(myfiles);

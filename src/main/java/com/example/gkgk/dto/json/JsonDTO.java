@@ -2,10 +2,9 @@ package com.example.gkgk.dto.json;
 
 import java.util.List;
 
-public class MyJsonDTO {
+public class JsonDTO {
     private List<String> fileNames;
 
-    // Getter와 Setter
     public List<String> getFileNames() {
         return fileNames;
     }
