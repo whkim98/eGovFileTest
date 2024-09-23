@@ -1,15 +1,20 @@
 package com.example.gkgk.controller;
 
+import com.example.gkgk.service.updateService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 @Controller
 public class TestController {
+
+    @Autowired
+    updateService updateService;
 
     @GetMapping("/test/insert")
     public String test(){
@@ -70,5 +75,8 @@ public class TestController {
         }
         return "";
     }
+
+
+
 
 }

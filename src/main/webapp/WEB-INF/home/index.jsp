@@ -175,6 +175,7 @@
     <div>
         <button type="button" onclick="location.href='/crawling'">dd</button>
         <button type="button" onclick="location.href='/jsTest'">jsTest</button>
+        <button type="button" onclick="location.href='/json'">JSON TEST</button>
     </div>
 </form>
 </body>
