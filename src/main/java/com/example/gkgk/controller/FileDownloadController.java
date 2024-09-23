@@ -1,5 +1,6 @@
 package com.example.gkgk.controller;
 
+import com.example.gkgk.dto.json.JsonDTO;
 import com.example.gkgk.ftp.ftpClientUtil;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
@@ -7,9 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -76,8 +75,6 @@ public class FileDownloadController {
             String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFilename);
 
-
-
             // 파일을 ResponseEntity로 반환
             return ResponseEntity.ok()
                     .headers(headers)
@@ -95,13 +92,20 @@ public class FileDownloadController {
                 e.printStackTrace();
             }
         }
-
-
-
     }
 
-
-
+//    @PostMapping("/example")
+//    @ResponseBody
+//    public ResponseEntity<Resource> example(
+//            @RequestPart("jsonData")JsonDTO dto,
+//            HttpServletRequest request
+//            )
+//    {
+//        String full_path = request.getSession().getServletContext().getRealPath("/resources/ftpFile");
+//        File file = new File(full_path);
+//
+//
+//    }
 
 }
 

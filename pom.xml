@@ -172,8 +172,23 @@
             <artifactId>commons-net</artifactId>
             <version>3.10.0</version>
         </dependency>
-
-
+        <!-- SFTP 기능 구현을 위한 의존성 -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.55</version>
+        </dependency>
+        <!-- SFTP에서 암호화 관련 기능 의존성 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.70</version> <!-- 최신 버전으로 업데이트 필요 -->
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.70</version> <!-- 최신 버전으로 업데이트 필요 -->
+        </dependency>
     </dependencies>
 
     <build>

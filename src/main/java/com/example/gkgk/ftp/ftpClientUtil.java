@@ -43,7 +43,7 @@ public class ftpClientUtil {
 //        }
 //    }
     public boolean uploadFile(InputStream inputStream, String remoteFilePath) throws IOException {
-        // 공백을 %20으로 대체
+
         remoteFilePath = URLEncoder.encode(remoteFilePath, StandardCharsets.UTF_8);
 
         System.out.println("ftp클라 remote" + remoteFilePath);
