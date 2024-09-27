@@ -5,9 +5,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.cache.annotation.EnableCaching;
 
 //@MapperScan("com.example.gkgk.mapper") // 매퍼 인터페이스가 위치한 패키지
 @SpringBootApplication
+@EnableCaching
 public class GkgkApplication extends SpringBootServletInitializer {
 
     @Override
